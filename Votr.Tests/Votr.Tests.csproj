@@ -6,7 +6,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C4F4E0DC-C145-4B7B-867E-A4830739D74B}</ProjectGuid>
+    <ProjectGuid>{127FBD8F-5F6D-4F22-90AB-4762B6D761B4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Votr.Tests</RootNamespace>

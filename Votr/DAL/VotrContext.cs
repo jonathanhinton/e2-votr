@@ -9,6 +9,10 @@ namespace Votr.DAL
 {
     public class VotrContext : DbContext
     {
+        public VotrContext() : base("DefaultConnection")
+        {
+            
+        }
 
         public DbSet<Poll> Polls { get; set; }
         public DbSet<Option> Options { get; set; }

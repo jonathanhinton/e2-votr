@@ -13,10 +13,21 @@ namespace Votr.Tests.DAL
     public class VotrRepositoryTest
     {
         //these two methods will run before and after every single test in order to set up a mock database in which to test methods, and then remove info so that there is no residual data that gets in the database.
+        List<Poll> datasource { get; set; }
+        Mock<VotrContext> mock_context { get; set; }
+        Mock<DbSet<Poll>> mock_polls_table { get; set; }
+        VotrRepository repo { get; set; }
+        IQueryable<Poll> data { get; set; }
+
         [TestInitialize]
         public void Initialize()
         {
+            datasource = new List<Poll>();
+            mock_context = new Mock<VotrContext>();
+            mock_polls_table = new Mock<DbSet<Poll>>(); //fake polls table
 
+            repo = new VotrRepository(mock_context.Object);
+            data = datasource.AsQueryable();
         }
 
         [TestCleanup]
@@ -25,10 +36,21 @@ namespace Votr.Tests.DAL
 
         }
 
+        public void ConnectMocksToDatastore() //utility method
+        {
+            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.Expression).Returns(data.Expression);
+            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.Provider).Returns(data.Provider);
+
+            // Tell our mocked VotrContext to use our fully mocked datasource. (List<Poll>)
+            mock_context.Setup(m => m.Polls).Returns(mock_polls_table.Object);
+        }
+
         [TestMethod]
         public void RepoEnsureICanCreateInstance()
         {
-            VotrRepository repo = new VotrRepository();
+           // VotrRepository repo = new VotrRepository();
             Assert.IsNotNull(repo);
         }
 
@@ -36,7 +58,7 @@ namespace Votr.Tests.DAL
         public void RepoEnsureIsUsingContext()
         {
             // Arrange 
-            VotrRepository repo = new VotrRepository();
+           // VotrRepository repo = new VotrRepository();
 
             // Act
 
@@ -47,26 +69,9 @@ namespace Votr.Tests.DAL
         [TestMethod]
         public void RepoEnsureThereAreNoPolls()
         {
-
-            //Mocking
-            List<Poll> datasource = new List<Poll>();
-            Mock<VotrContext> mock_context = new Mock<VotrContext>();
-            Mock<DbSet<Poll>> mock_polls_table = new Mock<DbSet<Poll>>(); // Fake Polls Table
-
-            // Arrange 
-            VotrRepository repo = new VotrRepository(mock_context.Object); //Injects mocked (fake) VotrContext
-            //IQueryable<Poll> data = datasource.AsQueryable(); //turn List<Poll> into something we can query with System.Linq | must be using System.Linq for this to work.
-            var data = datasource.AsQueryable(); //<--This is another option. and Casting
-
-            // telling our fake DBset to user our datasource like something Queryable, all four lines are necessary
-            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.Expression).Returns(data.Expression);
-            mock_polls_table.As<IQueryable<Poll>>().Setup(m => m.Provider).Returns(data.Provider);
-
-            // Tell our mocked VotrContext to use our fully mocked datasource. (List<Poll>)
-            mock_context.Setup(m => m.Polls).Returns(mock_polls_table.Object);
-
+            // Arrange
+            ConnectMocksToDatastore(); 
+            
             // Act
             List<Poll> list_of_polls = repo.GetPolls();
             List<Poll> expected = new List<Poll>();
@@ -79,7 +84,7 @@ namespace Votr.Tests.DAL
         public void RepoEnsurePollCountIsZero()
         {
             // Arrange 
-            VotrRepository repo = new VotrRepository();
+            ConnectMocksToDatastore();
 
             // Act
             int expected = 0;
@@ -93,7 +98,7 @@ namespace Votr.Tests.DAL
         public void RepoEnsureICanAddPoll()
         {
             // Arrange
-            VotrRepository repo = new VotrRepository();
+            ConnectMocksToDatastore();
 
             // Act
             repo.AddPoll("Some Title", DateTime.Now, DateTime.Now); // Not there yet.

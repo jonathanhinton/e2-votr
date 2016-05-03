@@ -2,17 +2,13 @@
 @using Votr.Models;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    List<Poll> polls = new List<Poll>();
 
-    polls.Add(new Poll { Title = "Obama 2014", StartDate = DateTime.Now, EndDate = DateTime.Now});
-    polls.Add(new Poll { Title = "Best Pizza Joint 2010", StartDate = DateTime.Now, EndDate = DateTime.Now });
-    polls.Add(new Poll { Title = "Best Pizza Joint 2014", StartDate = DateTime.Now, EndDate = DateTime.Now });
 }
 
 <h1>Polls</h1>
 
 
-@foreach (var item in polls)
+@foreach (var item in ViewBag.Polls)
     {
     <div class="row red">
         <div class="col-md-8 green">
@@ -31,7 +27,11 @@
             </ul>
         </div>
     </div>
-
-}
+        }
+<div class="row red">
+    <div class="col-md-offset-4">
+        <button>Create a New Poll</button>
+    </div>
+</div>
 
 

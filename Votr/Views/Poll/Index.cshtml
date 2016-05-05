@@ -14,7 +14,9 @@
 <div class="row red">
     <div class="col-md-8 green">
         @item.Title <br/>
-        my description bllaaaaaaaah!
+        @Html.ActionLink("Edit", "Edit", @item.PollId)
+        <a href="/Poll/Edit@{@item.PollId}
+            ">Edit</a>
     </div>
     <div class="col-md-2 blue text-center">
         @item.StartDate <br />

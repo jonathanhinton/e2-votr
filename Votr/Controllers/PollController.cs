@@ -59,9 +59,9 @@ namespace Votr.Controllers
 
         // POST: Poll/Edit/5
         [HttpPost]
-        public ActionResult Edit([Bind(Include = "PollId, Title, StartDate, EndDate")]Poll poll_to_edit)
-        {
 
+        public ActionResult Edit([Bind(Include ="PollId,Title,StartDate,EndDate")]Poll poll_to_edit)
+        {
             if (ModelState.IsValid)
             {
                 Repo.EditPoll(poll_to_edit);

@@ -21,10 +21,25 @@ namespace Votr.Models
         public DateTime EndDate { get; set; }
         
         // Need Options Relation
-        public virtual ICollection<Option> Options { get; set; }
+        
+        public virtual List<Option> Options { get; set; }
         // Tag Relation
         // User Relation
         public virtual ApplicationUser CreatedBy { get; set; }
         // Vote Relation 
+        /*
+        public List<Tag> Tags()
+        {
+            
+            List<Tag> tags = null;
+            return tags;
+        }
+
+        public void AddTag(string some_tag_name)
+        {
+            // Get the tag
+            PollTag pt = new PollTag {  Poll = this, Tag = some_tag}
+        }
+        */
     }
 }

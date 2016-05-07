@@ -67,6 +67,12 @@ namespace Votr.Tests.DAL
             mock_polltags_table.As<IQueryable<PollTag>>().Setup(m => m.Expression).Returns(polltag_data.Expression);
             mock_polltags_table.As<IQueryable<PollTag>>().Setup(m => m.Provider).Returns(polltag_data.Provider);
 
+
+            // Hijack the call to the Polls.Add method and put it the list using the List's Add method.
+            mock_polls_table.Setup(m => m.Add(It.IsAny<Poll>())).Callback((Poll poll) => polls_datasource.Add(poll));
+            mock_tags_table.Setup(m => m.Add(It.IsAny<Tag>())).Callback((Tag tag) => tags_datasource.Add(tag));
+            mock_polltags_table.Setup(m => m.Add(It.IsAny<PollTag>())).Callback((PollTag polltag) => polltags_datasource.Add(polltag));
+
             // Tell our mocked VotrContext to use our fully mocked Datasource. (List<Poll>)
             mock_context.Setup(m => m.PollTagRelations).Returns(mock_polltags_table.Object);
         }
@@ -124,12 +130,11 @@ namespace Votr.Tests.DAL
             // Arrange
             ConnectMocksToDatastore();
 
-            // Hijack the call to the Polls.Add method and put it the list using the List's Add method.
-            mock_polls_table.Setup(m => m.Add(It.IsAny<Poll>())).Callback((Poll poll) => polls_datasource.Add(poll));
+            ApplicationUser user = null;
             // Act
-            repo.AddPoll("Some Title", DateTime.Now, DateTime.Now,); // Not there yet.
+            repo.AddPoll("Some Title", DateTime.Now, DateTime.Now, user); // Not there yet.
             int actual = repo.GetPollCount(); 
-            int expected = 2;
+            int expected = 1;
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -242,6 +247,79 @@ namespace Votr.Tests.DAL
             // Assert
             Poll edited_poll = repo.GetPollOrNull(poll_to_edit_id);
             Assert.AreEqual(edited_poll.Title, "Changed");
+        }
+
+        [TestMethod]
+        public void RepoEnsureICanCreateATag()
+        {
+            // Arrange
+            ConnectMocksToDatastore();
+
+            // Act
+            repo.AddTag("footag");
+
+            //Assert
+            Assert.IsTrue(repo.TagExists("footag"));
+        }
+
+        [TestMethod]
+        public void RepoFindTagByName()
+        {
+            // Arrange
+            Tag tag_1 = new Tag { TagId = 1, Name = "foo" };
+            tags_datasource.Add(tag_1);
+            ConnectMocksToDatastore();
+
+            // Act
+            int tag_id = repo.FindTagByName("foo");
+
+            // Assert
+            Assert.AreEqual(1, tag_id);
+        }
+
+        [TestMethod]
+        public void RepoFindTagByNameNotThere()
+        {
+            // Arrange
+            Tag tag_1 = new Tag { TagId = 1, Name = "foo" };
+            tags_datasource.Add(tag_1);
+            ConnectMocksToDatastore();
+
+            // Act
+            int tag_id = repo.FindTagByName("bar");
+
+            // Assert
+            Assert.AreEqual(-1, tag_id);
+        }
+
+        [TestMethod]
+        public void RepoEnsureTagExists()
+        {
+            // Arrange
+            Tag tag_1 = new Tag { TagId = 1, Name = "foo" };
+            tags_datasource.Add(tag_1);
+            ConnectMocksToDatastore();
+
+            // Act
+            bool tag_exists = repo.TagExists("foo");
+
+            // Assert
+            Assert.IsTrue(tag_exists);
+
+        }
+
+        [TestMethod]
+        public void RepoEnsureICanCreateAPollWithTag()
+        {
+            // Arrange
+            ConnectMocksToDatastore();
+
+            // Act
+            repo.AddTag("footag");
+            ApplicationUser user = null;
+            repo.AddPoll("Some Title", DateTime.Now, DateTime.Now, user);
+            int poll_id = 1;
+            repo.AddTagToPoll(poll_id, "footag");
         }
 
     }

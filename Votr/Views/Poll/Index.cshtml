@@ -19,26 +19,44 @@
         <div class="alert alert-success" role="alert">
             My 
         </div>
-        <button ng-confirm-click="showPopup()" ng-cl>Delete</button>
+        <button data-toggle="modal" data-target="#modal-@item.PollId">Delete</button>
+        <div class="modal fade" id="modal-@item.PollId">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="close" data-dismiss="modal">X</button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.ActionLink("Yes?", "Delete", new { id = @item.PollId })
+                        @Html.ActionLink("No!", "Delete", new { id = @item.PollId })
+                        @*using (Html.BeginForm())
+                        {
+                            <input type="hidden" name="id" value="@item.PollId" />
+                        }*@
+                    </div>
+                    <div class="modal-footer">
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 text-center">
+            @item.StartDate <br />
+            @item.EndDate
+        </div>
+        <div class="col-md-2 text-center equal-height">
+            <ul>
+                <li><button class="action-button">View Results</button></li>
+            </ul>
+        </div>
     </div>
-    <div class="col-md-2 text-center">
-        @item.StartDate <br />
-        @item.EndDate
+    }
+    @if (User.Identity.IsAuthenticated)
+    {
+    <div class="row">
+        <div class="col-md-offset-4">
+
+                <button>Create a New Poll</button>
+
+        </div>
     </div>
-    <div class="col-md-2 text-center equal-height">
-        <ul>
-            <li><button class="action-button">View Results</button></li>
-        </ul>
-    </div>
-</div>
-}
-@if (User.Identity.IsAuthenticated)
-{
-<div class="row">
-    <div class="col-md-offset-4">
-       
-            <button>Create a New Poll</button>
-       
-    </div>
-</div>
-}
+    }

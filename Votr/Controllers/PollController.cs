@@ -36,6 +36,10 @@ namespace Votr.Controllers
         {
             try
             {
+                string Title = collection.Get("Title");
+                string StartDate = collection.Get("StartDate");
+                string EndDate = collection.Get("EndDate");
+                int test = 1;
                 // TODO: Add insert logic here
 
                 return RedirectToAction("Index");

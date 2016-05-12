@@ -21,6 +21,7 @@ namespace Votr.Models
         public DateTime EndDate { get; set; }
         
         // Need Options Relation
+        
         public virtual ICollection<Option> Options { get; set; }
         // Tag Relation
         // User Relation

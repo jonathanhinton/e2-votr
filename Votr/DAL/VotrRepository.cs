@@ -33,9 +33,20 @@ namespace Votr.DAL
             return context.Polls.ToList<Poll>();
         }
 
-        public void AddPoll(string title, DateTime start_time, DateTime end_time, ApplicationUser user)
+        public void AddPoll(string title, DateTime start_time, DateTime end_time, ApplicationUser user, List<string> options)
         {
-            Poll new_poll = new Poll { Title = title, EndDate = end_time, StartDate = start_time, CreatedBy = user};
+            if (options.Count() < 2)
+            {
+                throw new NotEnoughOptionsException();
+            }
+
+            List<Option> list_of_options = new List<Option>();
+            foreach (var option_item in options)
+            {
+                list_of_options.Add(new Option { Content = option_item });
+            }
+
+            Poll new_poll = new Poll { Title = title, EndDate = end_time, StartDate = start_time, CreatedBy = user, Options = list_of_options};
             context.Polls.Add(new_poll);
             context.SaveChanges();
         }

@@ -24,12 +24,21 @@ namespace Votr.Controllers
         // GET: Poll/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            Poll found_poll = Repo.GetPollOrNull(id);
+            if (found_poll == null)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(found_poll);
+            }
         }
 
         // GET: Poll/Create
         public ActionResult Create()
         {
+            ViewBag.Error = false;
             return View();
         }
 
@@ -42,9 +51,32 @@ namespace Votr.Controllers
 
                 string Title = collection.Get("Title");
 
-                DateTime StartDate = DateTime.Now;
+                DateTime StartDate;
                 //DateTime.Parse(collection.Get("StartDate"));
-                DateTime EndDate = DateTime.Now;// DateTime.Parse(collection.Get("EndDate"));
+                bool successful = DateTime.TryParse(collection.Get("StartDate"), out StartDate);
+                if (!successful)
+                {
+                    ViewBag.ErrorMessage = "Start Date Invalid";
+                    ViewBag.Error = true;
+                    return View();
+                }
+                DateTime EndDate;
+                successful = DateTime.TryParse(collection.Get("EndDate"), out EndDate);// DateTime.Parse(collection.Get("EndDate"));
+                if (!successful)
+                {
+                    ViewBag.ErrorMessage = "End Date Invalid";
+                    ViewBag.Error = true;
+                    return View();
+                }
+                else
+                {
+                    if (EndDate <= StartDate)
+                    {
+                        ViewBag.ErrorMessage = "End Date must be after the Start Date";
+                        ViewBag.Error = true;
+                        return View();
+                    }
+                }
 
 
                 string[] keys = collection.AllKeys;
@@ -58,13 +90,23 @@ namespace Votr.Controllers
                     }
                 }
 
+                if (options.Count() < 2)
+                {
+                    ViewBag.ErrorMessage = "Must Provide at Least 2 Options for this Poll";
+                    ViewBag.Error = true;
+                    return View();
+                }
+
                 //Get User ID form the HTTP Context
                 string user_id = User.Identity.GetUserId();
 
                 // Get the User Manager
-                ApplicationUserManager manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-
-                Repo.AddPoll(Title, StartDate, EndDate, user, options);                
+                // ApplicationUserManager manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                ApplicationUser user = Repo.GetUser(user_id);
+                if (user != null)
+                {
+                    Repo.AddPoll(Title, StartDate, EndDate, user, options);
+                }
 
                 int test = 1;
                 // TODO: Add insert logic here

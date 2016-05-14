@@ -40,6 +40,7 @@ namespace Votr.Controllers
             try
             {
                 string Title = collection.Get("Title");
+<<<<<<< HEAD
                 DateTime StartDate = DateTime.Parse(collection.Get("StartDate"));
                 DateTime EndDate = DateTime.Parse(collection.Get("EndDate"));
 
@@ -59,6 +60,11 @@ namespace Votr.Controllers
                 ApplicationUserManager manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
                 ApplicationUser user = manager.FindById(user_id);
                 Repo.AddPoll(Title, StartDate, EndDate, user, options);
+=======
+                string StartDate = collection.Get("StartDate");
+                string EndDate = collection.Get("EndDate");
+                string Option1 = collection.Get("option-1");
+>>>>>>> a813e6c2d88c3b5b1209cc349493afe36c032139
 
                 int test = 1;
                 // TODO: Add insert logic here

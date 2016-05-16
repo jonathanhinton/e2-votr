@@ -20,3 +20,7 @@ app.controller("PollCtrl", function () {
 
     }
 });
+
+app.controller("DetailCtrl", function () {
+
+});

@@ -26,18 +26,19 @@ app.controller("DetailsCtrl", function ($http) {
     var self = this;
 
     self.vote = {
-        poll: $('#vote-poll').val(),
+        poll: parseInt($('#vote-poll').val()),
         user: $('#vote-user').val(),
         option: ''
     };
 
     self.CastVote = function (e) {
-        alert(JSON.stringify(this.vote));
+        //alert(JSON.stringify(this.vote));
         e.preventDefault();
-        /*
-        $http({
-            method: 'POST',
+        $http.put('/api/Votes/' + this.vote.poll + '?optionselected=' + this.vote.option, {});
+       /* $http({
+            method: 'PUT',
             url: '/api/Votes',
+            data: self.vote
 
         });
         */

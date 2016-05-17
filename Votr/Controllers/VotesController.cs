@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -15,6 +16,7 @@ namespace Votr.Controllers
 {
     public class VotesController : ApiController
     {
+        private VotrRepository Repo = new VotrRepository();
         private VotrContext db = new VotrContext();
 
         // GET: api/Votes
@@ -36,37 +38,13 @@ namespace Votr.Controllers
             return Ok(vote);
         }
 
-        // PUT: api/Votes/5
+        // PUT: api/Votes/5/
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutVote(int id, Vote vote)
+        [HttpPut]
+        public IHttpActionResult PutVote(int id, [FromUri]int optionselected)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != vote.VoteId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(vote).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VoteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Repo.CastVote(id, User.Identity.GetUserId(), optionselected);
+            int test = 1;
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -75,6 +53,10 @@ namespace Votr.Controllers
         [ResponseType(typeof(Vote))]
         public IHttpActionResult PostVote(Vote vote)
         {
+            string user_id = User.Identity.GetUserId();
+            ApplicationUser user = Repo.GetUser(user_id);
+
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

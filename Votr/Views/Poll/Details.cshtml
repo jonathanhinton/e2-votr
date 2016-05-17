@@ -53,7 +53,14 @@
                     }
                 </ul>
             </form>
-            <button id="cast-vote" ng-click="detailsCtrl.CastVote($event)">Cast Your Vote!</button>
+            @if (ViewBag.has_voted)
+            {
+                <button id="cast-vote" ng-click="detailsCtrl.CastVote($event)" disabled>Cast Your Vote!</button>
+            }
+            else
+            {
+                <button id="cast-vote" ng-click="detailsCtrl.CastVote($event)">Cast Your Vote!</button>
+            }
         </div>
     </div>
 </div>

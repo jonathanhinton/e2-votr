@@ -30,6 +30,7 @@ namespace Votr.Controllers
                 return RedirectToAction("Index");
             } else
             {
+                ViewBag.has_voted = Repo.HasVote(id, User.Identity.GetUserId());
                 return View(found_poll);
             }
            
